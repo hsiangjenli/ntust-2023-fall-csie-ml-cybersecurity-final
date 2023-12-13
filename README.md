@@ -1,3 +1,5 @@
+主要程式碼放在：[`explain.py`](explain.py)
+
 參考資料：
 ---
 - https://github.com/JiamanBettyWu/CNN-SHAP/blob/main/cnn.ipynb
