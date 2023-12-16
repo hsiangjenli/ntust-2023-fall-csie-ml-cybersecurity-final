@@ -7,6 +7,10 @@ from torch.utils.data import Dataset
 
 lable_dic = {'maze': 0, 'icedid': 1, 'egregor': 2, 'shamoon': 3,'gandcrab': 4}
 
+def binary_2_image(binary, file_name):
+    img = Image.fromarray(binary)
+    img.save(file_name)
+    
 def set_seed(seed=42):
     '''Sets the seed of the entire notebook so results are the same every time we run.
     This is for REPRODUCIBILITY.'''

@@ -5,6 +5,9 @@
 - https://github.com/JiamanBettyWu/CNN-SHAP/blob/main/cnn.ipynb
 - [Explain an Intermediate Layer of VGG16 on ImageNet (PyTorch)](https://shap.readthedocs.io/en/latest/example_notebooks/image_examples/image_classification/Explain%20an%20Intermediate%20Layer%20of%20VGG16%20on%20ImageNet%20%28PyTorch%29.html)
 
+# 加入雜訊
+1. 使用 `shap` 找出有意義的 feature
+1. 直接把不同的病毒檔案加在尾端
 
 # PE32 轉 binary + 加入雜訊
 ## PE32 轉 binary
@@ -28,4 +31,3 @@
 00000042: 10111010 00001110 00000000 10110100 00001001 11001101  ......
 00000048: 00100001 10111000 00000001 01001100 11001101 00100001  !..L.!
 ```
-

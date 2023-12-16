@@ -8,6 +8,7 @@ import torch
 import shap
 import matplotlib.pyplot as plt
 import numpy as np
+import pickle
 
 # -- Setup training and test directories and csv files -------------------------
 TRAIN_DIR = 'data/train'
@@ -21,7 +22,7 @@ test_transform = transforms.Compose([
     #transforms.RandomHorizontalFlip(p=0.5),
     #transforms.RandomRotation(20),
     transforms.ToTensor(),
-    #transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 ])
 
 model = CNNModel()
@@ -35,15 +36,20 @@ test_loader = DataLoader(test_dataset, batch_size=100, num_workers=8)
 batch = next(iter(test_loader))
 images, labels = batch
 
-background = images
-test_images = images
-
-print(labels[:])
+background = images[:]
+test_images = images[:]
 
 e = shap.GradientExplainer(model, background)
 shap_values = e.shap_values(test_images)
 
 shap_numpy = [np.swapaxes(np.swapaxes(s, 1, -1), 1, 2) for s in shap_values]
+
+pickle.dump(shap_numpy, open("/workspace/bin/shap_values.pkl", "wb"))
+
+print(len(shap_numpy))
+print(len(shap_numpy[0]))
+print("shap_numpy: ", shap_numpy)
+
 test_numpy = np.swapaxes(np.swapaxes(test_images.numpy(), 1, -1), 1, 2)
 
 shap.image_plot(shap_numpy, test_numpy)
