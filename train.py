@@ -5,24 +5,26 @@ import pandas as pd
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from PIL import Image
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader
 from torchvision import transforms
 from torchmetrics import Accuracy, F1Score
 from tqdm import tqdm
 
 from utils import *
 from model import CNNModel
+import argparse
 
 os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
 set_seed(42)
 
-# -- Setup training and test directories and csv files -------------------------
-TRAIN_DIR = 'data/train'
-TEST_DIR = 'data/test'
-TRAIN_CSV = 'data/train.csv'
-TEST_CSV = 'data/test.csv'
-# ------------------------------------------------------------------------------
+argparser = argparse.ArgumentParser()
+argparser.add_argument('--data_dir', type=str)
+argparser.add_argument('--train_csv', type=str)
+argparser.add_argument('--test_csv', type=str)
+argparser.add_argument('--model_name', type=str)
+
+args = argparser.parse_args()
+
 
 train_transform = transforms.Compose([
     transforms.Resize((128, 128)),
@@ -32,7 +34,7 @@ train_transform = transforms.Compose([
     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 ])
 
-train_dataset = ImageDataset(TRAIN_DIR, pd.read_csv(TRAIN_CSV), train_transform)
+train_dataset = ImageDataset(args.data_dir, pd.read_csv(args.train_csv), train_transform)
 train_loader = DataLoader(train_dataset, batch_size=32, num_workers=8, shuffle=True, drop_last=True, pin_memory=True)
 
 model = CNNModel()
@@ -91,4 +93,4 @@ for epoch in range(100):
     if train_F1 > best_F1:
         best_F1 = train_F1
 
-        torch.save(model.state_dict(), f'/workspace/bin/MalewareClassifier_bestF1.pkl')
+        torch.save(model.state_dict(), f'/workspace/bin/{args.model_name}.pkl')
