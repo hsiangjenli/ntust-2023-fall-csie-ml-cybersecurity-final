@@ -72,8 +72,6 @@ if __name__ == "__main__":
                         f.write(hex(offset)[2:].encode('utf-8'))
                         f.write(b":")
 
-                    # if (i+1) % 7 == 0:
-                    #     f.write(" ......\n".encode("utf-8"))
                     
                     f.write(b" ")
                     f.write(group)
