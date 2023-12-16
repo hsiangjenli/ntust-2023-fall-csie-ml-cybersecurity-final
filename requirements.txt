@@ -3,3 +3,4 @@ ttach
 pandas
 shap
 matplotlib
+bitstring
