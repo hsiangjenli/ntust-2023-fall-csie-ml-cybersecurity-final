@@ -1,31 +1,35 @@
-主要程式碼放在：[`explain.py`](explain.py)
-
-參考資料：
----
-- https://github.com/JiamanBettyWu/CNN-SHAP/blob/main/cnn.ipynb
-- [Explain an Intermediate Layer of VGG16 on ImageNet (PyTorch)](https://shap.readthedocs.io/en/latest/example_notebooks/image_examples/image_classification/Explain%20an%20Intermediate%20Layer%20of%20VGG16%20on%20ImageNet%20%28PyTorch%29.html)
-
 # Project Structure
 
-```
+```python
 .
 ├── bin
 │   ├── blue_team.pkl
 │   └── red_team.pkl
 ├── data
-│   ├── bin2img.py
-│   ├── binary2image
-│   ├── blue
+│   ├── bin_2_img.py # binary --> image
+│   ├── bin_add_noise.py # binary + noise --> image
+│   ├── blue # train/test csv
+│   ├── brutual_noise.csv
 │   ├── motif_reports.csv
-│   ├── raw
-│   └── red
+│   ├── processed
+│   │   ├── add_noise # binary + noise
+│   │   ├── add_noise_image # binary + noise --> image
+│   │   ├── binary2image # raw --> image
+│   │   ├── noise # noise
+│   ├── raw # binary files (PE32 --> binary)
+│   └── red # train/test csv
+├── Dockerfile
 ├── Makefile
 ├── model.py
+├── noise_extract.py
 ├── README.md
 ├── requirements.txt
-├── test_code
-├── train.py
+├── score
+├── shap.png
+├── test.py # test blue team's model (original/with noise)
+├── train.py # train blue/red team's model
 └── utils.py
+
 ```
 
 # 加入雜訊
@@ -54,3 +58,7 @@
 00000042: 10111010 00001110 00000000 10110100 00001001 11001101  ......
 00000048: 00100001 10111000 00000001 01001100 11001101 00100001  !..L.!
 ```
+參考資料：
+---
+- https://github.com/JiamanBettyWu/CNN-SHAP/blob/main/cnn.ipynb
+- [Explain an Intermediate Layer of VGG16 on ImageNet (PyTorch)](https://shap.readthedocs.io/en/latest/example_notebooks/image_examples/image_classification/Explain%20an%20Intermediate%20Layer%20of%20VGG16%20on%20ImageNet%20%28PyTorch%29.html)

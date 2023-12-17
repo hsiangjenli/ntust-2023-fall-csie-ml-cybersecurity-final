@@ -26,7 +26,7 @@ test_transform = transforms.Compose([
     # transforms.RandomHorizontalFlip(p=0.5),
     # transforms.RandomRotation(20),
     transforms.ToTensor(),
-    transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    # transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 ])
 
 tta_transforms = tta.Compose([
@@ -53,6 +53,15 @@ test_loss, test_acc, test_F1 = 0, 0, 0
 
 model.eval()
 
+if "_" in args.data_dir:
+   noise_class = args.data_dir.split("/")[-1]
+   noise_class, noise_layers = noise_class.split("_")[0], noise_class.split("_")[1]
+else:
+   noise_class = "without_noise"
+   noise_layers = "without_noise"
+
+output = []
+
 with torch.no_grad():
     for images, labels in tqdm(test_loader):
       images, labels = images.to(device), labels.to(device)
@@ -63,6 +72,7 @@ with torch.no_grad():
           predicted_label = list(lable_dic.keys())[list(lable_dic.values()).index(pred)]
           actual_label = list(lable_dic.keys())[list(lable_dic.values()).index(label)]
           img = img.split("/")[-1]
+          output.append({"noise_class": noise_class, "img": img, "predicted_label": predicted_label, "actual_label": actual_label})
           print(f"圖片: {img}, 模型預測類別: {predicted_label}, 真實類別: {actual_label}")
       
       t_loss = criterion(out, labels)
@@ -75,3 +85,6 @@ with torch.no_grad():
     test_F1 /= len(test_loader)
     
     print(f"\nLoss: {test_loss}, Test Accuracy: {test_acc}, Test Macro-F1: {test_F1}")
+
+output_df = pd.DataFrame(output)
+output_df.to_csv(f"score/{args.data_dir.split('/')[-1]}.csv", index=False)
