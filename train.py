@@ -37,18 +37,22 @@ train_transform = transforms.Compose([
 train_dataset = ImageDataset(args.data_dir, pd.read_csv(args.train_csv), train_transform)
 train_loader = DataLoader(train_dataset, batch_size=32, num_workers=8, shuffle=True, drop_last=True, pin_memory=True)
 
-model = CNNModel()
+df = pd.read_csv(args.train_csv)
+df["l"] = df["label"].map(lable_dic)
+num_classes = len(df["label"].unique())
+
+model = CNNModel(num_classes)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model.to(device)
 
-weight = [7, 62, 23, 16, 24]
+weight = df["l"].value_counts().sort_index().to_list()
 weight = torch.Tensor([26/x for x in weight]).to(device)
 
 criterion = nn.CrossEntropyLoss(weight=weight, label_smoothing=0.15)
 optimizer = torch.optim.RAdam(model.parameters(), lr=0.0003)
 
-accuracy_fn = Accuracy(task="MULTICLASS",num_classes=5).to(device)
-F1Score_fn = F1Score(task="MULTICLASS",num_classes=5).to(device)
+accuracy_fn = Accuracy(task="MULTICLASS",num_classes=num_classes).to(device)
+F1Score_fn = F1Score(task="MULTICLASS",num_classes=num_classes).to(device)
 best_F1 = 0
 patience = 10  # 10個 epoch 為上限
 best_loss = None # 紀錄最好的loss

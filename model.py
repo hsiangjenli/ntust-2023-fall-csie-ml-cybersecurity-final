@@ -2,7 +2,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class CNNModel(nn.Module):
-    def __init__(self):
+    def __init__(self, num_classes=6):
         super(CNNModel, self).__init__()
 
         self.conv1_1 = nn.Conv2d(in_channels=3, out_channels=32, kernel_size=3, stride=1, padding=1)
@@ -13,7 +13,7 @@ class CNNModel(nn.Module):
 
         self.fc1 = nn.Linear(32 * 64 * 64, 128)
         self.dropout4 = nn.Dropout(0.25)
-        self.fc2 = nn.Linear(128, 5)
+        self.fc2 = nn.Linear(128, num_classes)
 
     def forward(self, x):
         x = F.relu(self.conv1_1(x))

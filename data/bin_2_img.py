@@ -39,15 +39,25 @@ def binary_file_to_image(input_file_path, output_file_path):
     np_image = np.array(image_data, dtype=np.uint8).reshape((img_height, img_width))
     image = Image.fromarray(np_image, 'L')
 
-    image.save(output_file_path)
-    print(f"Image saved to {output_file_path}")
+    try:
+
+        image.save(output_file_path)
+        print(f"Image saved to {output_file_path}")
+    
+    except Exception as e:
+        print(e)
+        print(f"Failed to save image to {output_file_path}")
 
 if __name__ == '__main__':
     import argparse
+    import os
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--input_file_folder')
     parser.add_argument('--output_file_folder')
     args = parser.parse_args()
+
+    os.makedirs(args.output_file_folder, exist_ok=True)
 
     for file in os.listdir(args.input_file_folder):
         input_file_path = os.path.join(args.input_file_folder, file)
