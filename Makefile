@@ -22,28 +22,28 @@ train:
 	python train.py --train_csv data/red/train.csv --test_csv data/red/test.csv --data_dir data/processed/binary2image --model_name red_team
 
 noise:
-	python noise_extract.py --noise_type normalize --image_dir data/processed/binary2image --output_dir data/processed/noise
+	# python noise_extract.py --noise_type normalize --image_dir data/processed/binary2image --output_dir data/processed/noise
 	python noise_extract.py --noise_type original --image_dir data/processed/binary2image --output_dir data/processed/noise
 
 
 add_noise:
 	# {'maze': 0, 'icedid': 1, 'egregor': 2, 'shamoon': 3,'gandcrab': 4,'azorult': 5}
 	@for virus in icedid gandcrab egregor maze shamoon; do \
-		for noise_type in normalize original; do \
+		for noise_type in original; do \
 			for noise_layer in 1 2 3; do \
 				echo $$virus $$noise_type $$noise_layer; \
 				if [ "$$virus" = "maze" ]; then \
-					noise_sample_num=15; \
-				elif [ "$$virus" = "icedid" ]; then \
-					noise_sample_num=6; \
-				elif [ "$$virus" = "egregor" ]; then \
 					noise_sample_num=13; \
+				elif [ "$$virus" = "icedid" ]; then \
+					noise_sample_num=1; \
+				elif [ "$$virus" = "egregor" ]; then \
+					noise_sample_num=11; \
 				elif [ "$$virus" = "shamoon" ]; then \
 					noise_sample_num=14; \
 				elif [ "$$virus" = "gandcrab" ]; then \
-					noise_sample_num=9; \
+					noise_sample_num=7; \
 				elif [ "$$virus" = "azorult" ]; then \
-					noise_sample_num=15; \
+					noise_sample_num=8; \
 				fi; \
 				cd data; python bin_add_noise.py --vbinary_input_folder raw --vbinary_output_folder processed/add_noise/$$noise_type --noise_input_folder processed/noise/$$noise_type --noise_class $$virus --noise_sample_num $$noise_sample_num --noise_layer $$noise_layer --test_csv blue/test.csv; \
 			done \
@@ -52,7 +52,7 @@ add_noise:
 
 b2in:
 	@for virus  in icedid gandcrab egregor maze shamoon; do \
-		for noise_type in normalize original; do \
+		for noise_type in original; do \
 			for noise_layer in 1 2 3; do \
 				echo $$virus $$noise_type $$noise_layer; \
 				cd data; python bin_2_img.py --input_file_folder processed/add_noise/$$noise_type/$$virus"_"$$noise_layer --output_file_folder processed/add_noise_image/$$noise_type/$$virus"_"$$noise_layer; \
@@ -71,5 +71,24 @@ test:
 		done \
 	done
 
-	# python test.py --test_csv data/blue/test.csv --data_dir data/processed/add_noise_image/normalize/egregor_1 --model_name blue_team
-	# python test.py --test_csv data/blue/test.csv --data_dir data/processed/add_noise_image/normalize/egregor_3 --model_name blue_team
+test_vis:
+	python noise_extract.py \
+	--noise_type original \
+	--image_dir data/processed/add_noise_image/original/icedid_2 \
+	--test_csv data/blue/test.csv \
+	--save_noise False \
+	--model_name blue_team
+
+	python noise_extract.py \
+	--noise_type original \
+	--image_dir data/processed/add_noise_image/original/gandcrab_2 \
+	--test_csv data/blue/test.csv \
+	--save_noise False \
+	--model_name blue_team
+
+	python noise_extract.py \
+	--noise_type original \
+	--image_dir data/processed/binary2image \
+	--test_csv data/blue/test.csv \
+	--save_noise False \
+	--model_name blue_team

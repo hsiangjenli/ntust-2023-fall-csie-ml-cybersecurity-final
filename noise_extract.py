@@ -14,14 +14,16 @@ from argparse import ArgumentParser
 parser = ArgumentParser()
 parser.add_argument('--noise_type', type=str, default='normalize')
 parser.add_argument('--image_dir', type=str, default='data/binary2image')
+parser.add_argument('--test_csv', type=str, default='data/red/test.csv')
 parser.add_argument('--output_dir', type=str, default='data/noise')
+parser.add_argument('--model_name', type=str, default='red_team')
+parser.add_argument('--save_noise', type=bool, default=True)
 
 args = parser.parse_args()
 
-# -- Setup paths ---------------------------------------------------------------
-test_csv = "data/red/test.csv"
-model_path = "bin/red_team.pkl"
-# ------------------------------------------------------------------------------
+model_path = f"bin/{args.model_name}.pkl"
+
+num_classes = 6 if args.model_name == 'red_team' else 5
 
 transforms_step = [
     transforms.Resize((128, 128)),
@@ -33,12 +35,12 @@ if args.noise_type == 'normalize':
 
 test_transform = transforms.Compose(transforms_step)
 
-model = CNNModel(num_classes=6)
+model = CNNModel(num_classes=num_classes)
 model.load_state_dict(torch.load(model_path))
 
 model.eval()
 
-ImageDataset = ImageDataset(args.image_dir, pd.read_csv(test_csv), test_transform)
+ImageDataset = ImageDataset(args.image_dir, pd.read_csv(args.test_csv), test_transform)
 test_loader = DataLoader(ImageDataset, batch_size=100, num_workers=8)
 
 batch = next(iter(test_loader))
@@ -68,9 +70,14 @@ for c in range(len(shap_numpy)):
 
         _class_name = list(lable_dic)[c]
 
-        pickle.dump(mask, open(f"{args.output_dir}/{args.noise_type}/{_class_name}_{i}.pkl", 'wb'))
+        print(f"{_class_name}_{i}: total contrib: {np.sum(pos_contrib)}")
 
-pickle.dump(shap_numpy, open(f"{args.output_dir}/{args.noise_type}_noise.pkl", "wb"))
+        if args.save_noise:
+            pickle.dump(mask, open(f"{args.output_dir}/{args.noise_type}/{_class_name}_{i}.pkl", 'wb'))
+
 shap.image_plot(shap_numpy, test_numpy)
 plt.show()
-plt.savefig('shap.png')
+
+prefix = args.image_dir.split('/')[-1]
+
+plt.savefig(f'{args.model_name}_{prefix}_shap.png')
