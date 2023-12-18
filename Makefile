@@ -92,3 +92,10 @@ test_vis:
 	--test_csv data/blue/test.csv \
 	--save_noise False \
 	--model_name blue_team
+
+	python noise_extract.py \
+	--noise_type original \
+	--image_dir data/processed/add_noise_image/original/egregor_1 \
+	--test_csv data/blue/test.csv \
+	--save_noise False \
+	--model_name blue_team

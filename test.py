@@ -73,7 +73,7 @@ with torch.no_grad():
           actual_label = list(lable_dic.keys())[list(lable_dic.values()).index(label)]
           img = img.split("/")[-1]
           output.append({"noise_class": noise_class, "img": img, "predicted_label": predicted_label, "actual_label": actual_label})
-          print(f"圖片: {img}, 模型預測類別: {predicted_label}, 真實類別: {actual_label}")
+          #print(f"圖片: {img}, 模型預測類別: {predicted_label}, 真實類別: {actual_label}")
       
       t_loss = criterion(out, labels)
       test_acc += accuracy_fn(out.argmax(dim=1), labels)
@@ -84,7 +84,8 @@ with torch.no_grad():
     test_acc /= len(test_loader)
     test_F1 /= len(test_loader)
     
-    print(f"\nLoss: {test_loss}, Test Accuracy: {test_acc}, Test Macro-F1: {test_F1}")
+    print(f"\n{noise_class} {noise_layers} {'-'*20}")
+    print(f"Loss: {test_loss}, Test Accuracy: {test_acc}, Test Macro-F1: {test_F1}")
 
 output_df = pd.DataFrame(output)
 output_df.to_csv(f"score/{args.data_dir.split('/')[-1]}.csv", index=False)
